@@ -20,9 +20,26 @@ In this post, we'll discuss:
 * Building a bar chart in SharePoint 2013 using JavaScript and REST
 * Building a stacked bar chart in SharePoint 2013 using JavaScript and REST
 
-### Summary of the listsAs mentioned above, multiple lists contained the information we needed to summarize. Our goal was to make a pie chart detailing the number of engagements by type. For our example, we're going to aggregate the data from three different lists.The first list, called Empire Engagements, is a list of all engagements of the type Empire. It contains the title of the engagement, as well as the current status and leader of the engagement.![](https://www.insight.com/content/dam/insight-web/sitesections/knowledgebase/Cardinal/Images/BuildingCharts2.png)The second list, called Rebel Engagements, is a list of all engagements of the type Rebel. It also contains the title of the engagement, as well as the current status and leader of the engagement.![](https://www.insight.com/content/dam/insight-web/sitesections/knowledgebase/Cardinal/Images/BuildingCharts3.png)The final list is called Independent Engagements. Like the previous lists, this list contains the title, status and leader of the engagement, but it also contains an Engagement Type column. The Engagement Type column is a choice column that allows multiple selections.![](https://www.insight.com/content/dam/insight-web/sitesections/knowledgebase/Cardinal/Images/BuildingCharts4.png)
+### Summary of the lists
 
-### Retrieving the dataTwo options exist for retrieving the data from SharePoint for our project: Representational State Transfer (REST) and the Client-Side Object Model (CSOM). While CSOM has been around since SharePoint 2010 and is currently better documented around the web, the preferred approach is to use REST as it's a standard that can be understood by multiple technologies. Certain tasks require CSOM as they can't be performed via REST, but the simple retrieval of items isn't one of those tasks.Using REST, we can easily query the data from the Empire Engagements list using a simple URL: http://sitename/\_api/web/lists/getByTitle('Empire%20Engagements')/items?$select=ID,Title,StatusThis returns our data in an XML format that can be read in the browser or through our JavaScript code.![](https://www.insight.com/content/dam/insight-web/sitesections/knowledgebase/Cardinal/Images/BuildingCharts5.png)If we wanted to filter the data to only show items with an Active Status, we can change the URL to: http://sitename/\_api/web/lists/getByTitle('Empire%20Engagements')/items?$select=ID,Title,Status&$filter=Status eq 'Active'To query the data via JavaScript, we can use the following code:
+As mentioned above, multiple lists contained the information we needed to summarize. Our goal was to make a pie chart detailing the number of engagements by type. For our example, we're going to aggregate the data from three different lists.The first list, called Empire Engagements, is a list of all engagements of the type Empire. It contains the title of the engagement, as well as the current status and leader of the engagement.
+
+![](https://www.insight.com/content/dam/insight-web/sitesections/knowledgebase/Cardinal/Images/BuildingCharts2.png)
+
+The second list, called Rebel Engagements, is a list of all engagements of the type Rebel. It also contains the title of the engagement, as well as the current status and leader of the engagement.
+![](https://www.insight.com/content/dam/insight-web/sitesections/knowledgebase/Cardinal/Images/BuildingCharts3.png)
+The final list is called Independent Engagements. Like the previous lists, this list contains the title, status and leader of the engagement, but it also contains an Engagement Type column. The Engagement Type column is a choice column that allows multiple selections.
+![](https://www.insight.com/content/dam/insight-web/sitesections/knowledgebase/Cardinal/Images/BuildingCharts4.png)
+
+### Retrieving the data
+
+Two options exist for retrieving the data from SharePoint for our project: Representational State Transfer (REST) and the Client-Side Object Model (CSOM). While CSOM has been around since SharePoint 2010 and is currently better documented around the web, the preferred approach is to use REST as it's a standard that can be understood by multiple technologies. Certain tasks require CSOM as they can't be performed via REST, but the simple retrieval of items isn't one of those tasks.Using REST, we can easily query the data from the Empire Engagements list using a simple URL: http://sitename/\_api/web/lists/getByTitle('Empire%20Engagements')/items?$select=ID,Title,Status
+
+This returns our data in an XML format that can be read in the browser or through our JavaScript code.
+![](https://www.insight.com/content/dam/insight-web/sitesections/knowledgebase/Cardinal/Images/BuildingCharts5.png)
+If we wanted to filter the data to only show items with an Active Status, we can change the URL to: http://sitename/\_api/web/lists/getByTitle('Empire%20Engagements')/items?$select=ID,Title,Status&$filter=Status eq 'Active'
+
+To query the data via JavaScript, we can use the following code:
 
 ```
 $.ajax({
@@ -73,7 +90,9 @@ $.ajax({
 
 In cases where we need to gather information from three different lists, each additional $.ajax call would need to be made inside the previous call's success function. In order to prevent "spaghetti" code, we turn to the concept of promises or deferreds.
 
-### Using jQuery promisesIn order to implement promises in the JavaScript, we'll use jQuery Deferreds. Using the Deferred object, we can make multiple asynchronous calls to the SharePoint REST API at the same time, rather than waiting for each individual call to complete prior to starting the next call. Using deferreds also allows us to create a much cleaner structure in our code.
+### Using jQuery promises
+
+In order to implement promises in the JavaScript, we'll use jQuery Deferreds. Using the Deferred object, we can make multiple asynchronous calls to the SharePoint REST API at the same time, rather than waiting for each individual call to complete prior to starting the next call. Using deferreds also allows us to create a much cleaner structure in our code.
 
 ```
 "use strict";
@@ -126,13 +145,18 @@ Engagements.RESTQuery = function (listTitle, query) {
 
 Additionally, this code contains some refactoring through the use of a generic function to retrieve data from lists via REST calls.
 
-### JavaScript charting toolThere are several good JavaScript charting libraries available on the internet. We decided to use a library called Highcharts because of the look and good documentation. The website is [http://www.highcharts.com/](http://www.highcharts.com/). This sample uses the highcharts.js and exporting.js libraries.
+### JavaScript charting tool
+There are several good JavaScript charting libraries available on the internet. We decided to use a library called Highcharts because of the look and good documentation. The website is [http://www.highcharts.com/](http://www.highcharts.com/). This sample uses the highcharts.js and exporting.js libraries.
 
-### Loading the charts on the pageAlthough there are several ways to add the JavaScript and HTML needed for the charts, we took the simplistic approach of adding to a page via the Script Editor web part (under the Media and Content category). All of the common JavaScript files are added via one web part, and the HTML and JavaScript to create each chart is contained within its own web part. All of the JavaScript files are uploaded to the SiteAssets library.
+### Loading the charts on the page
+Although there are several ways to add the JavaScript and HTML needed for the charts, we took the simplistic approach of adding to a page via the Script Editor web part (under the Media and Content category). All of the common JavaScript files are added via one web part, and the HTML and JavaScript to create each chart is contained within its own web part. All of the JavaScript files are uploaded to the SiteAssets library.
 
-### Building a pie chart in SharePoint 2013 using JavaScript and RESTNow we'll discuss the creation of the pie chart within our dashboard solution.
+### Building a pie chart in SharePoint 2013 using JavaScript and REST
 
-### Retrieving dataAs mentioned above, we're using jQuery promises --- specifically the when, done, fail pattern --- to retrieve our data via REST. We're querying data from the Independent Engagements list, the Rebel Engagements list and the Empire Engagements list. The data is returned respectively into the engagements1, engagements2 and engagements3 variables.To build the pie chart, we need our data as an array of names and counts, such as the following:\[\["Rebel", 3\], \["Empire", 4\], \["Independent", 1\]\]We'll store these values in the countArray variable.Retrieving the data from the Rebel Engagements and Empire Engagements lists is easy. We simply need to count the number of results retrieved. The following lines of code take the counts and put them into the countArray.
+Now we'll discuss the creation of the pie chart within our dashboard solution.
+
+### Retrieving data
+As mentioned above, we're using jQuery promises --- specifically the when, done, fail pattern --- to retrieve our data via REST. We're querying data from the Independent Engagements list, the Rebel Engagements list and the Empire Engagements list. The data is returned respectively into the engagements1, engagements2 and engagements3 variables.To build the pie chart, we need our data as an array of names and counts, such as the following:\[\["Rebel", 3\], \["Empire", 4\], \["Independent", 1\]\]We'll store these values in the countArray variable.Retrieving the data from the Rebel Engagements and Empire Engagements lists is easy. We simply need to count the number of results retrieved. The following lines of code take the counts and put them into the countArray.
 
 ```
   //Add count of Rebel Engagements list
@@ -199,7 +223,8 @@ for (var i = 0; i < dataArray.length; i++) {
 }
 ```
 
-### Creating the chartNow that we have the data in the format we need, we can create the chart. The chart will display in the engagementPieChart div on our page.
+### Creating the chart
+Now that we have the data in the format we need, we can create the chart. The chart will display in the engagementPieChart div on our page.
 
 ```
 $('#engagementPieChart').highcharts({
@@ -235,9 +260,11 @@ $('#engagementPieChart').highcharts({
     }]
 });
 ```
-### Building a bar chart in SharePoint 2013 using JavaScript and RESTNext, we'll discuss the creation of the bar chart within our dashboard solution.
+### Building a bar chart in SharePoint 2013 using JavaScript and REST
+Next, we'll discuss the creation of the bar chart within our dashboard solution.
 
-### Retrieving dataWe're using jQuery promises --- specifically the when, done, fail pattern --- to retrieve our data via REST. We're querying data from the Rebel Engagements list and the Empire Engagements list. The data is returned respectively into the engagements1 and engagements2 variables.To build the bar chart, we need our data separated into two arrays, with the category name and the corresponding count in the same position within each array, such as the following:
+### Retrieving data
+We're using jQuery promises --- specifically the when, done, fail pattern --- to retrieve our data via REST. We're querying data from the Rebel Engagements list and the Empire Engagements list. The data is returned respectively into the engagements1 and engagements2 variables.To build the bar chart, we need our data separated into two arrays, with the category name and the corresponding count in the same position within each array, such as the following:
 
 \["Luke Skywalker", "Darth Vader", "Yoda", "Princess Leia"\]
 
@@ -314,7 +341,8 @@ for (var i = 0; i < countArray.length; i++) {
 
 The categories are now in the xCategories array, and the counts are in the seriesData array.
 
-### Creating the chartNow that we have the data in the format we need, we can create the chart. The chart will display in the engagementsByLeaderChart div on our page.
+### Creating the chart
+Now that we have the data in the format we need, we can create the chart. The chart will display in the engagementsByLeaderChart div on our page.
 
 ```
 $('#engagementsByLeaderChart').highcharts({
@@ -356,9 +384,11 @@ $('#engagementsByLeaderChart').highcharts({
 });
 ```
 
-### Building a stacked bar chart in SharePoint 2013 using JavaScript and RESTFinally, we'll discuss the creation of the stacked bar chart within our dashboard solution.
+### Building a stacked bar chart in SharePoint 2013 using JavaScript and REST
+Finally, we'll discuss the creation of the stacked bar chart within our dashboard solution.
 
-### Retrieving and manipulating dataAs mentioned in the previous sections, we're using jQuery promises --- specifically the when, done, fail pattern --- to retrieve our data via REST. We're querying data from the Rebel Engagements list and the Empire Engagements list. The data is returned respectively into the engagements1 and engagements2 variables.To build the stacked bar chart, we need our data separated into a complex structure of objects and arrays, such as the following:
+### Retrieving and manipulating data
+As mentioned in the previous sections, we're using jQuery promises --- specifically the when, done, fail pattern --- to retrieve our data via REST. We're querying data from the Rebel Engagements list and the Empire Engagements list. The data is returned respectively into the engagements1 and engagements2 variables.To build the stacked bar chart, we need our data separated into a complex structure of objects and arrays, such as the following:
 
 \["Luke Skywalker", "Princess Leia", "Yoda", "Darth Vader"\]  
 \[{"Completed", \[1, 0, 0, 1\]},{"Active", \[1, 1, 1, 2\]},{"Pipeline", \[0, 0, 0, 1\]}\]The first array holds the leaders' names or categories, which will be displayed on the y-axis. The second array contains the status value (Pipeline, Active, Completed) within our chart, along with an array containing the values corresponding to the leader names.In order to hold the data we'll retrieve, we create a function that contains the leader name, status and count.
@@ -463,7 +493,8 @@ for (i = 0; i < data.length; i++) {
 }
 ```
 
-#### Creating the chartNow that we have the data in the format we need, we can create the chart. The chart will display in the engagementsByStatusChart div on our page.
+#### Creating the chart
+Now that we have the data in the format we need, we can create the chart. The chart will display in the engagementsByStatusChart div on our page.
 
 ```
 $('#engagementsByStatusChart').highcharts({
@@ -502,8 +533,11 @@ $('#engagementsByStatusChart').highcharts({
     
 For more details on the parameters and options used to create the chart, look at the Highcharts API reference at [http://api.highcharts.com/highcharts](http://api.highcharts.com/highcharts).
 
-#### ConclusionThis article has described how to build a dashboard in SharePoint 2013 using JavaScript and REST. We've included a pie chart, a bar chart and a stacked bar chart. The full source is available at Github: [https://github.com/CardinalNow/ChartsInSharePoint2013](https://github.com/CardinalNow/ChartsInSharePoint2013).
+### Conclusion
+This article has described how to build a dashboard in SharePoint 2013 using JavaScript and REST. We've included a pie chart, a bar chart and a stacked bar chart. The full source is available at Github: [https://github.com/CardinalNow/ChartsInSharePoint2013](https://github.com/CardinalNow/ChartsInSharePoint2013).
 
 ### [Explore more Digital Innovation insights →](https://www.insight.com/en_US/solve/digital-innovation/insights.html)
 
 This article originally appeared on May 7, 2013\.
+
+[Source](https://help.insight.com/app/answers/detail/a_id/128)
